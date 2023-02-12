@@ -1,10 +1,19 @@
 // TODO
 
+Levels of difficulty in this project
+
+-Trying to figure out how to use existing crates and modules for this project [failed]
+-Trying to initialise an array with data [failed]
+-Reading abstracted python functions and pytorch documentation to figure out what the hell is happening in the Yolov5 model [success]
+-Exporting (python) and importing (rust) the data [success]
+-The  (general) ML principles   [success]
+-The Matrix math and functions [success]
+
 The model is composed of files containing a variety of lists/arrays/tensors such as
 
 	- the module/layer names (i.e. what functions and in what order)
 	- the parameters for these modules
-	- The size and shape of the output tensors required for each module (so a statically allocated array can be created)
+	- The size and shape of the output tensors required for each module (so a statically allocated array can be created) // yeah but see above.
 	- The weights tensors required for each module
 
  all of the following are passed as params anyway. No need to include a tensor size array
@@ -13,13 +22,13 @@ Kernal_size = tensor_size[2]
 Input_layers=tensor_size[3]
 Output_layers=tensor_size[4]
 
-
+Note on conv weights: as the batch normalisation weights used during detection are pre-determined, these can be fused with the conv weights, removing BN as a seperate step. 
 	
 On initialisation the model
 	Acquires the input data
 	Loads the weights for the module
 	and creates a blank output tensor of the right dimensions
-	Reads the first module name, the parameters, and creates a blank output tensor of the right dimensions
+	Reads the first module name, the parameters, and creates a blank output tensor of the right dimensions // as appealing as it is to automate the program flow, this adds unneccesary complexity. Removed.
 	
 	
 To proceed the model
@@ -40,11 +49,3 @@ To proceed the model
     As such all of the above listed sizes and parameters will have to be determined.
     
     
-Levels of difficulty in this project
-
--Trying to figure out how to use existing crates and modules for this project [failed]
--Trying to initialise an array with data [failed]
--Reading abstracted python functions and pytorch documentation to figure out what the hell is happening in the Yolov5 model [success]
--Exporting (python) and importing (rust) the data [success]
--The  (general) ML principles   [success]
--The Matrix math and functions [success]

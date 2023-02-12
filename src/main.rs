@@ -12,7 +12,7 @@ struct Data{
     height:u16,
     width:u16,
     depth:u16,
-    count:usize,
+    count:u32,
     data:Vec<f32>,
 } 
 impl Data {
@@ -25,14 +25,27 @@ impl Data {
             data: vec![0.0; (size[0]*size[1]*size[2]).into()],
         }    
     }
-    fn get (&self, x:u16, y:u16, z:u16)-> &f32{             
+    fn get (&self, x:u16, y:u16, z:u16)-> f32{             
         let index:usize = (z * (self.height*self.width) + y*self.width +x).into();
-        &self.data[index]
+        self.data[index]
     }
     fn set (&mut self, x:u16, y:u16, z:u16, exp:f32) {             
         let index:usize = (z * (self.height*self.width) + y*self.width +x).into();
         self.data[index] = exp;
-    }             
+    }  
+    fn add (&mut self, data:&Data) {
+    
+        for i in 0..data.height {
+            for j in 0..data.width{
+                for k in 0..data.depth{           
+                    self.set(i,j,k, self.get(i,j,k)+data.get(i,j,k)); // This is real ugly. 
+                }
+            }
+        }
+    }
+
+
+
 } 
 
 #[derive(Debug)]
@@ -79,7 +92,7 @@ fn conv(in_channels:u16, out_channels:u16, ksize:u16, s:u16, p:u16, d:u16, weigh
                 for j in 0..num_strides_wide{
                     for l in 0..ksize{
                         for k in 0..ksize{
-                            multiply_buffer.set(a, i, j, (data.get(b, (i*s) + (k*d)-1, (j*s)+(l*d)-1) * weights.get(a, b, l, k)));
+                            multiply_buffer.set(a, i, j, data.get(b, (i*s) + (k*d)-1, (j*s)+(l*d)-1) * weights.get(a, b, l, k));
                         }
                     }
                 }
@@ -89,7 +102,7 @@ fn conv(in_channels:u16, out_channels:u16, ksize:u16, s:u16, p:u16, d:u16, weigh
     return multiply_buffer;
 }
 
-fn maxpool(data:Data, ksize:u16, s:u16 , p:u16) { 
+fn maxpool(data:&mut Data, ksize:u16, s:u16 , p:u16){           //Doesn't really need to return a Data, but it would be nice for consistency with other functions.
     let d = 0; // no dilation in maxpool function.
     let num_strides_high = data.height/s;
     let num_strides_wide = data.width/s;   
@@ -98,7 +111,7 @@ fn maxpool(data:Data, ksize:u16, s:u16 , p:u16) {
     for b in 0..in_channels {
         for i in 0..num_strides_high {
             for j in 0..num_strides_wide {
-                let pool_max=0.0;
+                let mut pool_max=0.0;
                 for l in 0..ksize {
                     for k in 0..ksize {
                         if data.get(b,(i*s) + (k*d), (j*s)+(l*d) )> pool_max {
@@ -116,7 +129,7 @@ fn maxpool(data:Data, ksize:u16, s:u16 , p:u16) {
     }
 }
  
- fn concat(data1: Data, data2: Data)->Data{
+ fn concat(data1: &Data, data2: &Data)->Data{                     //concats along X dimension. Yolo concats along [1] dimension. Is same?.
     
      //as with all other parameters, data len is precalculated.
      let width = data1.width + data2.width;   //row length
@@ -125,53 +138,62 @@ fn maxpool(data:Data, ksize:u16, s:u16 , p:u16) {
      let out_size = [width,height,depth];
      let mut concat_buffer= Data::new(out_size);
 
-     for a in 0..width{
-        for b in 0..height{
+     for a in 0..data1.width{
+        for b in 0..data1.height{
             for c in 0..depth{
-                
+                concat_buffer.set(a, b, c, data1.get(a, b, c,));
             }
         }
      }
+     for a in 0..data2.width{
+        for b in 0..data2.height{
+            for c in 0..depth{
+                concat_buffer.set(a+data1.width, b, c, data1.get(a, b, c,));
+            }
+        }
+     }
+     concat_buffer
  }
      
       
      
- fn upsample(data:Data, out_size:[u16;3], scaling_factor:u16)->Data {
+ fn upsample(data:&Data, out_size:[u16;3], scaling_factor:u16)->Data{
      
-    let out_buffer= data.new(out_size);
-    let out_channels = out_size[0];
-    let out_height = out_size[1];
-    let out_width = out_size[2];
-
+    let mut out_buffer= Data::new(out_size);
     for i in 0..data.height {
-       for j in 0..data.width{
-          out_buffer[i*scaling_factor][j*scaling_factor]= data[i][j];
-          out_buffer[i*scaling_factor+1][j*scaling_factor+1]= data[i][j];
-       }
-    }
+        for j in 0..data.width{
+            for k in 0..data.depth{
+                for a in 0..scaling_factor{
+                    out_buffer.set(i+a,j+a,k, data.get(i,j,k)); 
+                }
+            }
+        }            
+    } out_buffer
  }        
- 
- fn bottleneck(data:Data,c1:i32, c2:i32, shortcut:bool, g:i32, e:f32)-> Data{	// ch_in, ch_out, shortcut, groups, expansion
-    let cbomb:i32 =(c2*e);  // hidden channels
-    conv(c1, cbomb, 1, 1);
-    conv(cbomb, c2, 3, 1, g=g);
-    if c1==c2 & shortcut {
-      data.add(data);	
-    
-    } 
+
+
+
+ fn bottleneck(data:&Data,c1:u16, c2:u16, shortcut:bool, g:u16, e:f32, weights:&Weights,)->Data{	// ch_in, ch_out, shortcut, groups, expansion
+    let cbomb:u16 =(c2 as f32*e) as u16;  // hidden channels
+    let temp = conv(c1, cbomb, 1, 1,0,0,weights, data);
+    let mut out = conv(cbomb, c2, 3, 1, 0, 0,weights, &temp);
+    if c1==c2 && shortcut==true {
+      out.add(data);	
+    } out
  }
 
   // CSP Bottleneck with 3 convolutions    
- fn C3(c1:i32, c2:i32, shortcut:bool, g:i32, e:f32)-> Data{	// ch_in, ch_out, shortcut, groups, expansion
+ fn C3(c1:u16, c2:u16, shortcut:bool, g:u16, e:f32, weights:&Weights, data:&Data )->Data{	// ch_in, ch_out, shortcut, groups, expansion
      
-     let cbomb:i32 = (c2 * e);  //hidden channels
+    let cbomb:u16 = (c2 as f32 * e) as u16;  //hidden channels
 
-     let d1:Data = conv(c1, cbomb, 1, 1);
-     bottleneck(cbomb, cbomb, shortcut, g, e=1.0);     //for _ in range(n)
-     let d2:Data = conv(c1, cbomb, 1, 1);
-     let cdata:Data =concat(d1, d2);
-     conv(2 * cbomb, c2, 1, cdata);  //optional act=FReLU(c2)
- }
+    let d1:Data = conv(c1, cbomb, 1, 1,0,0,weights,data);
+    let b1 = bottleneck(&d1,cbomb, cbomb, shortcut, g, 1.0,weights);     //for _ in range(n)
+    let d2:Data = conv(c1, cbomb, 1, 1,0,0,weights,&b1);
+    let cdata:Data =concat(&b1, &d2);
+    let out = conv(2 * cbomb, c2, 1, 1,0,0, weights, &cdata);  //optional act=FReLU(c2)
+    out
+    }
 
 
 
