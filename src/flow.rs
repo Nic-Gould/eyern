@@ -1,3 +1,7 @@
+na = 3          //number of anchors
+no = 255  // number of outputs
+
+////Divide the number of output channels in the YAML file by 2
 
   //First Layer
   
