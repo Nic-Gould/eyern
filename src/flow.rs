@@ -1,11 +1,7 @@
-na = 3          //number of anchors
-no = 255  // number of outputs
-
-////Divide the number of output channels in the YAML file by 2
-
+pub fn model (){
   //First Layer
   
-   conv(3, 32, kernel_size=(6, 6), stride=(2, 2), padding=(2, 2))
+   conv(3, 32, kernel_size=(6, 6), stride=(2, 2), padding=(2, 2));
      
 
 //Second Layer
@@ -343,8 +339,9 @@ no = 255  // number of outputs
             (2): Conv2d(512, 255, kernel_size=(1, 1), stride=(1, 1))
           )
         )
-      )
-    )
-  )
-)>
+      
+    
+  
+
+}
 

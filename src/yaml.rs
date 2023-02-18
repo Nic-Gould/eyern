@@ -1,10 +1,10 @@
-nc: 80  # number of classes
-depth_multiple: 0.33  # model depth multiple
-width_multiple: 0.50  # layer channel multiple
-anchors:
-  - [10,13, 16,30, 33,23]  # P3/8
-  - [30,61, 62,45, 59,119]  # P4/16
-  - [116,90, 156,198, 373,326]  # P5/32
+let nc = 80;  // number of classes
+let depth_multiple= 0.33; // model depth multiple
+let width_multiple= 0.50;  // layer channel multiple
+let anchors = 
+  [[10,13, 16,30, 33,23],  // P3/8
+  [30,61, 62,45, 59,119],  // P4/16
+  [116,90, 156,198, 373,326]];  // P5/32
 
 # YOLOv5 v6.0 backbone
 backbone:
