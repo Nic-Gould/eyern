@@ -15,7 +15,7 @@ use std::vec;
         count:u32,
         data:Vec<f32>,
     } 
-    impl Data {
+    impl Data {         //probs make it a trait and hit it with that detection struct
         fn new (size:[u16;3])->Data{
             Data {
                 width:size[0],   //row length
@@ -74,7 +74,36 @@ use std::vec;
             &self.data[index]
         }          
     }
-
+    fn read_image(){
+            
+        let im0 = image::open("cat.jpg").unwrap();  
+        //img.dimensions();
+        //img.color();
+    
+    
+        // Padded resize
+        //img = letterbox(img0, img_size, stride=stride)[0]
+    
+        // Convert
+        //img = img[:, :, ::-1].transpose(2, 0, 1)  // BGR to RGB, to DxWxH
+        /*
+        img /= 255.0  // 0 - 255 to 0.0 - 1.0
+        if img.ndimension() == 3:
+            img = img.unsqueeze(0)
+    */
+    
+        let img:Data = Data::new([640,640,3]);      //A data is already padded with zeros
+            let vert_padding = (640-480)/2;
+            for i in img.height{
+                for j in img.width{
+                    for k in img.depth{
+                        for pixel in im0.pixels(){
+                        img.set(i+vert_padding,j,k, pixel[k] as f32/255.0);
+                    }
+                }
+            }
+            }
+    }
     fn conv(in_channels:u16, out_channels:u16, ksize:u16, s:u16, p:u16, d:u16, weights:&Weights, data:&Data) -> Data{
         
         let out_height = ((data.height+2*p-d*(ksize-1) )-1/s)+1;
@@ -215,7 +244,7 @@ use std::vec;
 
     } */
 
-    fn sppf (c1:u16, c2:u16, data:&Data, weights:&Weights)->Data{
+    fn sppf(c1:u16, c2:u16, data:&Data, weights:&Weights)->Data{
         let k=5;
         let cbomb = c1/ 2;  // hidden channels should be floor division
         let tmp1 = conv(c1, cbomb, 1, 1, 0, 0, weights, data,);
@@ -235,4 +264,40 @@ use std::vec;
         out
     }
 
- }
+ 
+    fn xyxy2xywh(xyxy:[u32;4]){
+        // Convert nx4 boxes from [x1, y1, x2, y2] to [x, y, w, h] where xy1=top-left, xy2=bottom-right
+        let x1 = xyxy[0][1];
+        let x2 =xyxy[1][1];
+        let y1 = xyxy[0][0];
+        let y2 = xyxy[1][0];
+
+        let x_center    =   (x2-x1)/ 2       ;        
+        let y_center    =   (y2-y1) / 2      ;
+        let width       =   x2-x1            ;
+        let height:u8   =   y2-y1            ;
+        return [x_center,y_center,width,height];
+    }
+    
+    fn output(predictions:<Vec>, out_path:str){ // or will it be a custom struct?
+    
+                for prediction in predictions{
+                    
+                    let class = prediction[0];
+                    let conf = prediction[1];
+                    let bbox = prediction[2];
+                    let out_string = format!("{},{},{}", class, conf, bbox);
+                    
+                    let mut output = File::create(out_path)?;
+                    write!(output, out_string)?;
+                }
+
+
+                        }
+
+                                  //fn count_instances(){
+          /*   for c in pred[:, -1].unique():
+                n = (pred[:, -1] == c).sum()  // detections per class
+                s += f"{n} {names[int(c)]}{"s" * (n > 1)}, "  // add to string
+            s = s.rstrip(", ")
+        } */

@@ -1,51 +1,25 @@
 // TODO
 
+
+GOALS
+A fun project to help me learn rust. The idea is to build YoloV5 (detection only) from scratch in rust. From scratch to me means standard library only.
+I've used an image library to load the images as I don't consider loading images part of the scope anymore than I consider openCV part of YOLO.
+The program will load and process a single image, outputting the results to a text file. 
+
+NEXT STEPS
+Once operational I hope to add support for reading from a MJPEG stream, and hopefully outpuuting bounding boxes onto the image. I also imagine I'll use external crates for these functions. 
+
+
+
 Levels of difficulty in this project
 
--Trying to figure out how to use existing crates and modules for this project [failed]
--Trying to initialise an array with data [failed]
--Reading abstracted python functions and pytorch documentation to figure out what the hell is happening in the Yolov5 model [success]
--Exporting (python) and importing (rust) the data [success]
--The  (general) ML principles   [success]
--The Matrix math and functions [success]
+10-Trying to figure out how to use existing tensor crates and modules for this project [failed]
+10-Trying to *initialise* an array with pre-existing data [failed]
+9-Reading abstracted python functions and pytorch documentation to figure out what the hell is happening in the Yolov5 model [success]
+7-Exporting (python) and importing (rust) the data [success]
+4-The  (general) ML principles   [success]
+3-The Matrix math and functions [success]
 
-The model is composed of files containing a variety of lists/arrays/tensors such as
 
-	- the module/layer names (i.e. what functions and in what order)
-	- the parameters for these modules
-	- The size and shape of the output tensors required for each module (so a statically allocated array can be created) // yeah but see above.
-	- The weights tensors required for each module
-
- all of the following are passed as params anyway. No need to include a tensor size array
-Kernal_size = tensor_size[1]
-Kernal_size = tensor_size[2]
-Input_layers=tensor_size[3]
-Output_layers=tensor_size[4]
-
-Note on conv weights: as the batch normalisation weights used during detection are pre-determined, these can be fused with the conv weights, removing BN as a seperate step. 
-	
-On initialisation the model
-	Acquires the input data
-	Loads the weights for the module
-	and creates a blank output tensor of the right dimensions
-	Reads the first module name, the parameters, and creates a blank output tensor of the right dimensions // as appealing as it is to automate the program flow, this adds unneccesary complexity. Removed.
-	
-	
-To proceed the model
-	Perfoms the required function on the data as defined by the module
-	Loads and initialises the next module
-	Passes the data to that module as an input.
-    For inference on a known system, the size of all data structures is known in advance, as are all paramaters and their sizes. 
-
-    A struct is created to contain the weights for each model layer. On systems with more memory these could all be created at once. For embedded systems (ref design esp32s3) the unzipped tensor data exceeds the total device storage let alone the ram.
-    
-    A struct is created to contain the output data for each layer. 
-    For the first layer, the input data is read from the frame buffer.
-    For all subsequent layers, the input data is the output data from the previous model layer (with some skips etc which require an extra data struct).
-    
-    Initialisation params for the structs such as the tensor dimensions can be read from file, input as a param, or calculated from .length type methods.
-    At the moment I'm leaning towards reading everything from file.
-    
-    As such all of the above listed sizes and parameters will have to be determined.
     
     
