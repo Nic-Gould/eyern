@@ -22,4 +22,7 @@ Levels of difficulty in this project
 
 
     
-    
+    NEEDS
+    new setters and getters if merging data classes.
+    type checking
+    SOOOOOOOOOOOOO many conversions to account for the fact that f32 doesn't work with most of the methods / functions I need.

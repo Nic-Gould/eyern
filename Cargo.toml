@@ -8,5 +8,6 @@ edition = "2021"
 [dependencies]
 array-init = "2.1.0"
 dfdx = "0.10.0"
+image = "0.24.5"
 ndarray = "0.15.6"
 ndarray-npy = "0.8.1"
