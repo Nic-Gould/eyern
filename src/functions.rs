@@ -279,7 +279,7 @@ use std::vec;
         return [x_center,y_center,width,height];
     }
     
-    fn output(predictions:<Vec>, out_path:str){ // or will it be a custom struct?
+    fn output(predictions:Vec, out_path:str){ // or will it be a custom struct?
     
                 for prediction in predictions{
                     
