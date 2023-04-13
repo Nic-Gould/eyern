@@ -6,18 +6,18 @@ use std::io::Write;
 
 fn main(){
 
-let settings = HashMap::from([
-        (num_classes,80)
-        ,(max_nms,  30000)
-        ,(conf_thres, 0.25) 
-        ,(iou_thres,0.45) 
-        ,(max_det,300)
-      //weights= "yolov5s.pt",  // model.pt path(s)
-      ,(source , "data/images/cat.jpg")  // file/dir/URL/glob, 0 for webcam
-      ,(imgsz, 640)  // inference size (pixels)
-      ,(out_path, "detections.txt")       
-    ]);
-    let x= settings[num_classes];
+
+    let num_classes = 80;
+    let max_nms = 30000;
+    let conf_thres = 0.25; 
+    let iou_thres = 0.45; 
+    let max_det = 300;
+      //weights= "yolov5s.pt",              // model.pt path(s)
+    let source = "data/images/cat.jpg";     // file/dir/URL/glob, 0 for webcam
+    let imgsz = 640;                         // inference size (pixels)
+    let out_path= "detections.txt";       
+
+
 // The data pub struct is an output from each layer, and is used as an input in the subsequent layer.
 // On a few occasions the data is used in later layers and needs to be kept.
 // mutable access to a data pub struct is only required during creation
@@ -179,13 +179,13 @@ impl Data {         //probs make it a trait and hit it with that detection pub s
             img = img.unsqueeze(0)
     */
     
-        let img:Data = Data::new([640,640,3]);      //A data is already padded with zeros
+        let img:Data = Data::new([640,640,3]);      //A data is already filled with zeros
             let vert_padding = (640-480)/2;
             for i in 0..img.height{
                 for j in 0..img.width{
                     for k in 0..img.depth{
                         for pixel in im0.pixels(){
-                            let colour_value = pixel.2[k]as f32/255.0; // RGBA value is third in struct, k iterates over the RGB values.
+                            let colour_value = pixel.2[k.into()] as f32/255.0; // RGBA value is third in struct, k iterates over the RGB values.
                             img.set(i+vert_padding,j,k, colour_value) ;
                         }    
                     }
