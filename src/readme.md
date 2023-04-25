@@ -13,12 +13,12 @@ Once operational I hope to add support for reading from a MJPEG stream, and hope
 
 Levels of difficulty in this project
 
-10-Trying to figure out how to use existing tensor crates and modules for this project [failed]
-10-Trying to *initialise* an array with pre-existing data [failed]
-9-Reading abstracted python functions and pytorch documentation to figure out what the hell is happening in the Yolov5 model [success?]
-7-Exporting (python) and importing (rust) the data [success]
-4-The  (general) ML principles   [success]
-3-The Matrix math and functions [success]
+* 10-Trying to figure out how to use existing tensor crates and modules for this project [failed]
+* 10-Trying to *initialise* an array with pre-existing data [failed]
+* 9-Reading abstracted python functions and pytorch documentation to figure out what the hell is happening in the Yolov5 model [success?]
+* 7-Exporting (python) and importing (rust) the data [success]
+* 4-The  (general) ML principles   [success]
+* 3-The Matrix math and functions [success]
 
 
     
