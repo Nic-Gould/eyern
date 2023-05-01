@@ -1,5 +1,9 @@
 // TODO
-
+* tidied up main today and am worried about my C3 implementation
+* also deciding on how to pass params to inner funtions from outerfunctions in main (e.g. C3 calling conv)
+* new setters and getters if merging data classes. (maybe I just won't and I'll have 3 similar structs...)
+* type checking
+* finish detection function impementation
 
 GOALS
 A fun project to help me learn rust. The idea is to build YoloV5 (detection only) from scratch in rust. From scratch to me means standard library only.
@@ -22,7 +26,6 @@ Levels of difficulty in this project
 
 
     
-    NEEDS
-    new setters and getters if merging data classes.
-    type checking
+  
+   
     

@@ -1,3 +1,6 @@
+// There are actual embedded rust crates for ESP32 that should make this significantly easier.
+// This were just my initial ideas 
+
 fn get_esp32()->data
 
 //From <https://github.com/espressif/esp32-camera/blob/master/driver/include/esp_camera.h> 

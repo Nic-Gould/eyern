@@ -97,3 +97,15 @@ fn main() {
          fn sigmoid(x: &f32)->f32{
            1/(1+e^(-x))
          }
+
+ for char in bump{
+   match char {
+       "[" => ,
+       "]" => ,
+       0..9 => ,
+       "." => ,
+       " " => ,
+       _ => , 
+
+   }
+}
