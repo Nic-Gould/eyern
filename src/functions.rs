@@ -269,7 +269,7 @@ impl Data {         //probs make it a trait and hit it with that detection pub s
 
     pub fn sigmoid(x:f32)->f32{
         let euler = std::f32::consts::E;
-        1/(1+euler.pow(-x))
+        1/(1+euler.powf(-x))
         
     }
 
@@ -470,8 +470,8 @@ fn detect(data: &Data, weights: &Weights, connection:i32){
                     //prediction boxes xywh
                     let box_x = 2.0* sigmoid(pred_x)-0.5 + grid_x;
                     let box_y = 2.0* sigmoid(pred_y)-0.5 + grid_y;
-                    let box_width = anchor_width *(2.0 * sigmoid(pred_width)).pow(2) ;
-                    let box_height = anchor_height *(2.0 * sigmoid(pred_height)).pow(2) ;
+                    let box_width = anchor_width *(2.0 * sigmoid(pred_width)).powf(2) ;
+                    let box_height = anchor_height *(2.0 * sigmoid(pred_height)).powf(2) ;
                     
                     //Update tensors 
                     data.set(i,j,k,box_x);
