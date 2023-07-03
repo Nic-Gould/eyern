@@ -1,6 +1,5 @@
 // TODO
-* tidied up main today and am worried about my C3 implementation
-* also deciding on how to pass params to inner funtions from outerfunctions in main (e.g. C3 calling conv)
+* deciding on how to pass params to inner funtions from outerfunctions in main (e.g. C3 calling conv)
 * new setters and getters if merging data classes. (maybe I just won't and I'll have 3 similar structs...)
 * type checking
 * finish detection function impementation
